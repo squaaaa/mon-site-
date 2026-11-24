@@ -296,9 +296,8 @@
             const serviceID = 'service_bguk22l';
             const templateID = 'template_re7bsfo';
             
-            // CORRECTION : Utilisation de to_email pour correspondre à la config EmailJS
             const templateParams = {
-                to_email: email.value, 
+                user_email: email.value,
                 to_name: name.value,
                 code: generatedCode
             };
@@ -367,7 +366,7 @@
             if(user) {
                 const serviceID = 'service_bguk22l';
                 const templateID = 'template_nrzfidi';
-                const resetLink = `https://blanchimax.cielcroizat.fr/reset-password.html?email=${encodeURIComponent(email)}`;
+                const resetLink = `https://squaaaa.github.io/mon-site-/reset-password.html?email=${encodeURIComponent(email)}`;
                 const templateParams = {
                     user_email: email,
                     to_name: user.name,
