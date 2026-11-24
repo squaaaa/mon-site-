@@ -299,7 +299,8 @@
             const templateParams = {
                 user_email: email.value,
                 to_name: name.value,
-                code: generatedCode
+                code: generatedCode,
+                message: `Votre code de vérification Blanchimax est : ${generatedCode}`
             };
 
             emailjs.send(serviceID, templateID, templateParams)
