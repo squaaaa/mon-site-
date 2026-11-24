@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blanchimax | Boutique Officielle</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          emailjs.init("FFTELrK8ecgnz9s_r"); // Ta Clé Publique
+       })();
+    </script>
+    <style>
+        :root {
+            --primary-color: #7b2cbf;
+            --accent-color: #ff4d4d;
+            --bg-color: #0a0a0a;
+            --text-color: #ffffff;
+            --card-bg: #1a1a1a;
+            --success-color: #2ecc71;
+        }
+
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: 'Segoe UI', sans-serif; margin: 0; line-height: 1.6; }
+
+        /* --- HEADER --- */
+        header { padding: 15px 5%; text-align: center; border-bottom: 1px solid #222; position: sticky; top: 0; background: rgba(10, 10, 10, 0.95); z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.8rem; font-weight: bold; text-transform: uppercase; cursor: pointer; letter-spacing: 2px; }
+        .header-icons { display: flex; gap: 20px; align-items: center; }
+        .icon-btn { position: relative; cursor: pointer; font-size: 1.4rem; background: none; border: none; color: white; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
+        .cart-pop { transform: scale(1.4); color: var(--primary-color); }
+        .cart-count { position: absolute; top: -8px; right: -10px; background: var(--accent-color); color: white; border-radius: 50%; padding: 2px 7px; font-size: 0.75rem; font-weight: bold; }
+        .user-status { font-size: 0.8rem; color: var(--primary-color); margin-right: 10px; display: none; }
+
+        .container { max-width: 1100px; margin: auto; padding: 20px; }
+
+        /* --- BOUTIQUE --- */
+        .hero { display: flex; flex-wrap: wrap; align-items: center; gap: 40px; padding: 40px 0; }
+        .hero-text { flex: 1; min-width: 300px; }
+        .price-tag { margin: 10px 0; }
+        .old-price { text-decoration: line-through; color: #888; margin-right: 15px; font-size: 1.4rem; }
+        .new-price { color: var(--accent-color); font-weight: bold; font-size: 2.2rem; }
+
+        .option-card { background: #111; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; margin-bottom: 12px; transition: 0.3s; }
+        .option-card.selected { border-color: var(--primary-color); background: rgba(123, 44, 191, 0.1); border-width: 2px; }
+        .discount-badge { background: var(--success-color); color: #000; font-size: 0.75rem; font-weight: bold; padding: 3px 8px; border-radius: 5px; }
+
+        /* --- INPUTS & ERREURS --- */
+        .input-pay { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: white; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; font-family: monospace; transition: 0.3s; }
+        .input-error { border: 2px solid var(--accent-color) !important; }
+        .error-text { color: var(--accent-color); font-size: 0.75rem; margin-bottom: 10px; display: none; font-weight: bold; }
+        .success-text { color: var(--success-color); font-size: 0.75rem; margin-bottom: 10px; display: none; font-weight: bold; }
+
+        /* --- PAIEMENT --- */
+        .payment-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+        .pay-method { background: #000; border: 1px solid #333; padding: 15px; border-radius: 10px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .pay-method.active { border-color: var(--primary-color); background: rgba(123, 44, 191, 0.1); }
+        .crypto-box { background: #000; padding: 15px; border-radius: 10px; border: 1px dashed var(--primary-color); margin-top: 15px; display: none; }
+        .apple-pay-btn { background: white; color: black; font-weight: bold; padding: 15px; border-radius: 8px; text-align: center; display: none; cursor: pointer; margin-top: 15px; font-size: 1.2rem; }
+
+        /* --- CONTENU --- */
+        .section-title { text-align: center; margin: 60px 0 30px; font-size: 2rem; border-bottom: 2px solid var(--primary-color); display: inline-block; padding-bottom: 10px; }
+        .composition-area { display: flex; flex-wrap: wrap; gap: 30px; align-items: center; margin-top: 30px; }
+        .card { background: var(--card-bg); padding: 25px; border-radius: 15px; border-left: 5px solid var(--primary-color); margin-bottom: 15px; }
+
+        /* --- SLIDER --- */
+        .slider-container { flex: 1; min-width: 300px; overflow: hidden; border-radius: 15px; box-shadow: 0 0 30px rgba(123, 44, 191, 0.3); }
+        .slider { display: flex; transition: transform 0.6s ease; width: 100%; }
+        .slider img { width: 100%; display: block; }
+
+        .btn { background: var(--primary-color); color: white; padding: 18px 40px; width: 100%; border-radius: 50px; font-weight: bold; border: none; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        
+        #shop-section, #cart-section, #login-section, #admin-section { display: none; }
+        .cart-item { border-bottom: 1px solid #333; padding: 15px 0; display: flex; justify-content: space-between; align-items: center; }
+        .item-qty { background: var(--primary-color); padding: 2px 8px; border-radius: 5px; font-size: 0.8rem; margin-left: 10px; }
+
+        .auth-toggle { text-align: center; margin-top: 15px; cursor: pointer; color: var(--primary-color); font-size: 0.85rem; text-decoration: underline; }
+
+        /* --- ADMIN STYLES --- */
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #111; }
+        .admin-table th, .admin-table td { padding: 12px; border: 1px solid #333; text-align: left; }
+        .admin-table th { background: var(--primary-color); }
+        .del-user-btn { background: var(--accent-color); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+
+        footer { text-align: center; padding: 50px; border-top: 1px solid #222; margin-top: 80px; color: #666; font-size: 0.9rem; }
+    </style>
+</head>
+<body onload="checkAuth()">
+
+    <header>
+        <div class="logo" onclick="showSection('shop')">Blanchimax</div>
+        <div class="header-icons">
+            <span id="user-welcome" class="user-status"></span>
+            <button class="icon-btn" onclick="showSection('login')" id="auth-btn">👤</button>
+            <button class="icon-btn" onclick="showSection('cart')" id="cart-icon-main">
+                🛒 <span class="cart-count" id="cart-count">0</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+        <section id="shop-section" style="display: block;">
+            <div class="hero">
+                <div class="hero-text">
+                    <h1>Blanchiment de 2ème Génération</h1>
+                    <div class="price-tag">
+                        <span class="old-price" id="display-old-price">20.00€</span>
+                        <span class="new-price" id="display-new-price">9.99€</span>
+                    </div>
+                    <div style="margin: 25px 0;">
+                        <div class="option-card selected" onclick="selectPack(1, 9.99, 20.00, this)">
+                            <div><strong>1 Boîte</strong></div><div>9.99€ <span class="discount-badge">-50%</span></div>
+                        </div>
+                        <div class="option-card" onclick="selectPack(5, 40.00, 50.00, this)">
+                            <div><strong>Pack 5 Boîtes</strong></div><div>40.00€ <span class="discount-badge">-20%</span></div>
+                        </div>
+                        <div class="option-card" onclick="selectPack(10, 80.00, 100.00, this)">
+                            <div><strong>Pack 10 Boîtes</strong></div><div>80.00€ <span class="discount-badge">-20%</span></div>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="addToCart()">AJOUTER AU PANIER</button>
+                </div>
+                <div class="slider-container">
+                    <div class="slider" id="mainSlider">
+                        <img src="produit.jpg.jpg.jpg" alt="Produit">
+                        <img src="application.jpg.jpg.jpg" alt="Application">
+                        <img src="résultat.jpg.jpg.png" alt="Résultat">
+                    </div>
+                </div>
+            </div>
+
+            <center><h2 class="section-title">Composition & Ingrédients</h2></center>
+            <div class="composition-area">
+                <div style="flex:1; text-align:center;"><img src="ingredients.jpg.jpg.jpg" style="max-width:100%; border-radius:15px;"></div>
+                <div style="flex:1;">
+                    <div class="card"><h3>🌿 MENTHOL</h3><p>Élimine les débris et pigments en surface pour un éclat immédiat.</p></div>
+                    <div class="card"><h3>💧 GLYCEROL</h3><p>Protège l'émail et hydrate les gencives sensibles durant le processus.</p></div>
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-top:60px; background:#111; padding:40px; border-radius:15px;">
+                <h2 style="color:#ccc;">Dimensions & Format</h2>
+                <p>Nos bandes sont conçues pour s'adapter à toutes les morphologies dentaires.</p>
+                <img src="dimensions.jpg.jpg.jpg" style="max-width:100%; border-radius:10px; margin-top:20px;">
+            </div>
+        </section>
+
+        <section id="cart-section">
+            <h2 style="text-align:center;">Votre Panier</h2>
+            <div id="cart-items-list"></div>
+            <div style="text-align:right; font-size:1.8rem; font-weight:bold; margin:20px 0; color:var(--accent-color);">
+                Total: <span id="cart-total">0.00</span>€
+            </div>
+
+            <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid #333;">
+                <h3 style="margin-top:0">Mode de Paiement sécurisé</h3>
+                <div class="payment-methods">
+                    <div class="pay-method active" onclick="setPay(this, 'Carte')">💳 Carte</div>
+                    <div class="pay-method" onclick="setPay(this, 'Apple Pay')">🔲 Apple</div>
+                    <div class="pay-method" onclick="setPay(this, 'Crypto')">₿ Crypto</div>
+                </div>
+
+                <div id="ui-carte" style="margin-top:20px;">
+                    <input type="text" id="shipping-address" class="input-pay" placeholder="Adresse postale (N°, Rue)">
+                    <input type="text" id="shipping-zip" class="input-pay" placeholder="Code Postal" maxlength="5">
+                    
+                    <input type="text" id="card-name" class="input-pay" placeholder="Nom du titulaire">
+                    <input type="text" id="card-number" class="input-pay" placeholder="0000/0000/0000/0000" maxlength="19">
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="card-expiry" class="input-pay" placeholder="MM/YY" maxlength="5">
+                        <input type="text" id="card-cvv" class="input-pay" placeholder="CVV" maxlength="3">
+                    </div>
+                </div>
+
+                <div id="ui-apple" class="apple-pay-btn" onclick="openApplePay()"> Pay</div>
+                <div id="ui-crypto" class="crypto-box"><p>Adresse BTC : bc1qxy2kgdy6jrsq4z6f3vv67v6af52jas33m9t08s</p></div>
+                
+                <button id="main-pay-btn" class="btn" style="margin-top: 25px;" onclick="checkout()">CONFIRMER LE PAIEMENT</button>
+            </div>
+        </section>
+
+        <section id="login-section">
+            <div class="auth-container" style="max-width:400px; margin:auto; background:var(--card-bg); padding:30px; border-radius:15px;">
+                <div id="login-form">
+                    <h2>Connexion</h2>
+                    <input type="email" id="login-email" class="input-pay" placeholder="Email">
+                    <input type="password" id="login-pass" class="input-pay" placeholder="Mot de passe">
+                    <div id="login-error" class="error-text">Email ou mot de passe incorrect</div>
+                    <div id="forgot-success" class="success-text">Email de récupération envoyé !</div>
+                    <button class="btn" onclick="login()">Se connecter</button>
+                    <div class="auth-toggle" onclick="forgotPassword()">Mot de passe oublié ?</div>
+                    <div class="auth-toggle" onclick="toggleAuth(true)">Pas de compte ? Créer un compte</div>
+                </div>
+
+                <div id="register-form" style="display:none;">
+                    <div id="purchase-warning" style="display:none; color:var(--accent-color); font-weight:bold; text-align:center; margin-bottom:15px;">
+                        veuillez créer un compte avant d'acheter quelque chose
+                    </div>
+                    <div id="reg-fields">
+                        <h2>Créer un compte</h2>
+                        <input type="text" id="reg-name" class="input-pay" placeholder="Nom complet">
+                        <input type="email" id="reg-email" class="input-pay" placeholder="Email (@gmail, @hotmail...)">
+                        <div id="reg-email-error" class="error-text">Email invalide (ex: @gmail, @hotmail...)</div>
+                        <input type="password" id="reg-pass" class="input-pay" placeholder="Mot de passe">
+                        <div id="reg-error" class="error-text">Cet email est déjà utilisé</div>
+                        <button class="btn" onclick="register()">S'inscrire</button>
+                    </div>
+                    
+                    <div id="verify-ui" style="display:none;">
+                        <h2>Vérification Email</h2>
+                        <p style="font-size:0.9rem; color:#888;">Un code a été envoyé à votre adresse email.</p>
+                        <input type="text" id="verify-code" class="input-pay" placeholder="Entrez le code reçu">
+                        <div id="verify-error" class="error-text">Code incorrect</div>
+                        <button class="btn" onclick="verifyRegistration()">Confirmer</button>
+                    </div>
+
+                    <div id="toggle-reg" class="auth-toggle" onclick="toggleAuth(false)">Déjà inscrit ? Se connecter</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="admin-section">
+            <h2 style="text-align:center;">Base de Données Utilisateurs</h2>
+            <div style="text-align: right; margin-bottom: 10px;">
+                <button class="del-user-btn" onclick="deleteAllUsers()">SUPPRIMER TOUS LES COMPTES</button>
+            </div>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Mot de Passe</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-user-list"></tbody>
+            </table>
+            <button class="btn" style="margin-top:20px;" onclick="showSection('shop')">RETOUR À LA BOUTIQUE</button>
+        </section>
+    </div>
+
+    <footer>&copy; 2026 Blanchimax | yanisjulesprojet@gmail.com</footer>
+
+    <script>
+        let cart = [];
+        let selectedPack = { name: "1 Boîte Blanchimax", price: 9.99 };
+        let currentUser = null;
+        let paymentMethod = "Carte";
+        let pendingUser = null; // Temp storage for verification
+        let generatedCode = "";
+
+        // --- VALIDATION EMAIL ---
+        function isValidEmail(email) {
+            const domains = ["@gmail", "@hotmail", "@outlook", "@yahoo", "@orange", "@icloud", "@live"];
+            return domains.some(d => email.toLowerCase().includes(d));
+        }
+
+        // --- AUTH ---
+        function toggleAuth(isRegister) {
+            document.getElementById('login-form').style.display = isRegister ? 'none' : 'block';
+            document.getElementById('register-form').style.display = isRegister ? 'block' : 'none';
+            document.querySelectorAll('.error-text, .success-text').forEach(e => e.style.display = 'none');
+            document.querySelectorAll('.input-pay').forEach(i => i.classList.remove('input-error'));
+        }
+
+        function getUsers() { return JSON.parse(localStorage.getItem('users') || '[]'); }
+
+        function register() {
+            const name = document.getElementById('reg-name');
+            const email = document.getElementById('reg-email');
+            const pass = document.getElementById('reg-pass');
+            const errEmail = document.getElementById('reg-email-error');
+            const errExist = document.getElementById('reg-error');
+
+            errEmail.style.display = 'none';
+            errExist.style.display = 'none';
+
+            if(!name.value || !email.value || !pass.value) return;
+
+            if(!isValidEmail(email.value)) {
+                errEmail.style.display = 'block';
+                email.classList.add('input-error');
+                return;
+            }
+
+            let users = getUsers();
+            if(users.find(u => u.email === email.value)) {
+                errExist.style.display = 'block';
+                return;
+            }
+
+            // --- START VERIFICATION FLOW ---
+            generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+            pendingUser = { name: name.value, email: email.value, pass: pass.value };
+
+            const serviceID = 'service_bguk22l';
+            const templateID = 'template_re7bsfo';
+            
+            // CORRECTION : Utilisation de to_email pour correspondre à la config EmailJS
+            const templateParams = {
+                to_email: email.value, 
+                to_name: name.value,
+                code: generatedCode
+            };
+
+            emailjs.send(serviceID, templateID, templateParams)
+                .then(function() {
+                    document.getElementById('reg-fields').style.display = 'none';
+                    document.getElementById('toggle-reg').style.display = 'none';
+                    document.getElementById('verify-ui').style.display = 'block';
+                    alert("Un code de vérification vous a été envoyé par email.");
+                }, function(err) {
+                    alert("Erreur lors de l'envoi du mail : " + JSON.stringify(err));
+                });
+        }
+
+        function verifyRegistration() {
+            const inputCode = document.getElementById('verify-code').value;
+            const err = document.getElementById('verify-error');
+
+            if(inputCode === generatedCode) {
+                let users = getUsers();
+                users.push(pendingUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                alert("Compte créé avec succès !");
+                toggleAuth(false);
+                // Reset UI
+                document.getElementById('reg-fields').style.display = 'block';
+                document.getElementById('toggle-reg').style.display = 'block';
+                document.getElementById('verify-ui').style.display = 'none';
+            } else {
+                err.style.display = 'block';
+            }
+        }
+
+        function login() {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            const err = document.getElementById('login-error');
+
+            // ACCÈS ADMIN
+            if(email === "admin" && pass === "admin") {
+                showSection('admin');
+                renderAdminUsers();
+                return;
+            }
+
+            let user = getUsers().find(u => u.email === email && u.pass === pass);
+            if(user) {
+                localStorage.setItem('currentUser', JSON.stringify({name: user.name, email: user.email}));
+                location.reload();
+            } else { err.style.display = 'block'; }
+        }
+
+        function forgotPassword() {
+            const email = document.getElementById('login-email').value;
+            const success = document.getElementById('forgot-success');
+            const error = document.getElementById('login-error');
+
+            if(!email) {
+                alert("Veuillez saisir votre email.");
+                return;
+            }
+
+            let user = getUsers().find(u => u.email === email);
+
+            if(user) {
+                const serviceID = 'service_bguk22l';
+                const templateID = 'template_nrzfidi';
+                const resetLink = `https://blanchimax.cielcroizat.fr/reset-password.html?email=${encodeURIComponent(email)}`;
+                const templateParams = {
+                    user_email: email,
+                    to_name: user.name,
+                    message: `Voici votre lien de réinitialisation sécurisé pour Blanchimax : ${resetLink}`
+                };
+                emailjs.send(serviceID, templateID, templateParams)
+                    .then(function() {
+                        success.innerText = "Email de récupération envoyé à " + email;
+                        success.style.display = 'block';
+                        error.style.display = 'none';
+                    }, function(err) {
+                        alert("Erreur technique lors de l'envoi : " + JSON.stringify(err));
+                    });
+            } else {
+                error.innerText = "Aucun compte associé à cet email.";
+                error.style.display = 'block';
+                success.style.display = 'none';
+            }
+        }
+
+        function checkAuth() {
+            const saved = localStorage.getItem('currentUser');
+            if (saved) {
+                currentUser = JSON.parse(saved);
+                document.getElementById('user-welcome').innerText = "Salut, " + currentUser.name;
+                document.getElementById('user-welcome').style.display = "inline";
+                document.getElementById('auth-btn').innerText = "🚪"; 
+                document.getElementById('auth-btn').onclick = () => { localStorage.removeItem('currentUser'); location.reload(); };
+            }
+        }
+
+        // --- ADMIN FUNCTIONS ---
+        function renderAdminUsers() {
+            const list = document.getElementById('admin-user-list');
+            const users = getUsers();
+            list.innerHTML = users.map((u, index) => `
+                <tr>
+                    <td>${u.name}</td>
+                    <td>${u.email}</td>
+                    <td>${u.pass}</td>
+                    <td><button class="del-user-btn" onclick="deleteUser(${index})">Supprimer</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteUser(index) {
+            let users = getUsers();
+            users.splice(index, 1);
+            localStorage.setItem('users', JSON.stringify(users));
+            renderAdminUsers();
+        }
+
+        function deleteAllUsers() {
+            if(confirm("Voulez-vous vraiment supprimer TOUS les comptes ?")) {
+                localStorage.removeItem('users');
+                renderAdminUsers();
+            }
+        }
+
+        // --- PANIER ---
+        function addToCart() {
+            if (!currentUser) {
+                showSection('login');
+                toggleAuth(true);
+                document.getElementById('purchase-warning').style.display = 'block';
+                document.querySelectorAll('#register-form .input-pay').forEach(i => i.classList.add('input-error'));
+                return;
+            }
+            cart.push({...selectedPack});
+            document.getElementById('cart-count').innerText = cart.length;
+            const btn = document.getElementById('cart-icon-main');
+            btn.classList.add('cart-pop');
+            setTimeout(() => btn.classList.remove('cart-pop'), 300);
+        }
+
+        function renderCart() {
+            const list = document.getElementById('cart-items-list');
+            let total = 0;
+            const counts = {};
+            cart.forEach(item => { counts[item.name] = (counts[item.name] || 0) + 1; total += item.price; });
+            list.innerHTML = Object.keys(counts).map(name => {
+                const qty = counts[name];
+                return `<div class="cart-item"><span>${name} <b class="item-qty">X${qty}</b></span><span>${(cart.find(i => i.name === name).price * qty).toFixed(2)}€</span></div>`;
+            }).join('');
+            document.getElementById('cart-total').innerText = total.toFixed(2);
+        }
+
+        function selectPack(qty, price, old, el) {
+            document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedPack = { name: qty + " Boîte(s) Blanchimax", price: price };
+            document.getElementById('display-new-price').innerText = price.toFixed(2) + "€";
+            document.getElementById('display-old-price').innerText = old.toFixed(2) + "€";
+        }
+
+        function showSection(id) {
+            ['shop-section', 'cart-section', 'login-section', 'admin-section'].forEach(s => document.getElementById(s).style.display = 'none');
+            document.getElementById(id + '-section').style.display = 'block';
+            if(id === 'cart') renderCart();
+            window.scrollTo(0,0);
+        }
+
+        // --- PAIEMENT ---
+        function setPay(el, method) {
+            document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('active'));
+            el.classList.add('active');
+            paymentMethod = method;
+            document.getElementById('ui-carte').style.display = (method === 'Carte') ? 'block' : 'none';
+            document.getElementById('ui-apple').style.display = (method === 'Apple Pay') ? 'block' : 'none';
+            document.getElementById('ui-crypto').style.display = (method === 'Crypto') ? 'block' : 'none';
+            document.getElementById('main-pay-btn').style.display = (method === 'Apple Pay') ? 'none' : 'block';
+        }
+
+        function openApplePay() {
+            let total = document.getElementById('cart-total').innerText;
+            if(total == "0.00") return alert("Panier vide");
+            window.open(`apple-pay-sim.html?total=${total}`, '_blank', 'width=400,height=600');
+        }
+
+        function checkout() {
+            if(!currentUser) return showSection('login');
+            if(cart.length === 0) return alert("Panier vide");
+            if(paymentMethod === "Carte") {
+                const fields = ['shipping-address', 'shipping-zip', 'card-name', 'card-number', 'card-expiry', 'card-cvv'];
+                let valid = true;
+                fields.forEach(f => { if(!document.getElementById(f).value) { document.getElementById(f).classList.add('input-error'); valid = false; }});
+                if(!valid) return alert("Remplissez tous les champs.");
+            }
+            alert(`Paiement via ${paymentMethod} accepté !`);
+            cart = []; document.getElementById('cart-count').innerText = "0"; showSection('shop');
+        }
+
+        // SLIDER
+        let idx = 0;
+        setInterval(() => { idx = (idx + 1) % 3; const s = document.getElementById('mainSlider'); if(s) s.style.transform = `translateX(${-idx * 100}%)`; }, 4000);
+    </script>
+</body>
+</html>
