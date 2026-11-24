@@ -308,9 +308,9 @@
                     document.getElementById('reg-fields').style.display = 'none';
                     document.getElementById('toggle-reg').style.display = 'none';
                     document.getElementById('verify-ui').style.display = 'block';
-                    alert("Un code de vérification vous a été envoyé par email.");
                 }, function(err) {
-                    alert("Erreur lors de l'envoi du mail : " + JSON.stringify(err));
+                    errExist.innerText = "Erreur lors de l'envoi du mail : " + JSON.stringify(err);
+                    errExist.style.display = 'block';
                 });
         }
 
@@ -322,7 +322,6 @@
                 let users = getUsers();
                 users.push(pendingUser);
                 localStorage.setItem('users', JSON.stringify(users));
-                alert("Compte créé avec succès !");
                 toggleAuth(false);
                 // Reset UI
                 document.getElementById('reg-fields').style.display = 'block';
@@ -358,7 +357,8 @@
             const error = document.getElementById('login-error');
 
             if(!email) {
-                alert("Veuillez saisir votre email.");
+                error.innerText = "Veuillez saisir votre email.";
+                error.style.display = 'block';
                 return;
             }
 
@@ -379,7 +379,8 @@
                         success.style.display = 'block';
                         error.style.display = 'none';
                     }, function(err) {
-                        alert("Erreur technique lors de l'envoi : " + JSON.stringify(err));
+                        error.innerText = "Erreur technique lors de l'envoi : " + JSON.stringify(err);
+                        error.style.display = 'block';
                     });
             } else {
                 error.innerText = "Aucun compte associé à cet email.";
